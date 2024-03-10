@@ -9,9 +9,9 @@ const DB_DATABASE = process.env.DB_DATABASE || 'files_manager';
  * A MongoDB Client Class
  */
 class DBClient {
-  constructor () {
+  constructor() {
     this.client = new MongoClient(
-      `mongodb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}`
+      `mongodb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}`,
     );
     this.isConnected = false;
     this.db = null;
@@ -23,39 +23,39 @@ class DBClient {
     });
   }
 
-  isAlive () {
+  isAlive() {
     return this.isConnected;
   }
 
-  async nbUsers () {
+  async nbUsers() {
     return this.db.collection('users').countDocuments();
   }
 
-  async nbFiles () {
+  async nbFiles() {
     return this.db.collection('files').countDocuments();
   }
 
-  filesCollection () {
+  filesCollection() {
     return this.db.collection('files');
   }
 
-  findUserByEmail (email) {
+  findUserByEmail(email) {
     return this.db.collection('users').findOne({ email });
   }
 
-  findUserById (userId) {
+  findUserById(userId) {
     return this.db.collection('users').findOne({ _id: ObjectId(userId) });
   }
 
-  async addUser (email, password) {
+  async addUser(email, password) {
     const hashedPassword = sha1(password);
     const result = await this.db.collection('users').insertOne({
       email,
-      password: hashedPassword
+      password: hashedPassword,
     });
     return {
       email: result.ops[0].email,
-      id: result.ops[0]._id
+      id: result.ops[0]._id,
     };
   }
 }

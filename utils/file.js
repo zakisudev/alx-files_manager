@@ -16,46 +16,46 @@ const { mkdir, writeFile } = promises;
  * FilesCollection class to manage file documents
  */
 export class FilesCollection {
-  constructor () {
+  constructor() {
     this.files = dBClient.filesCollection();
   }
 
-  async findById (id) {
+  async findById(id) {
     return this.files.findOne({ _id: ObjectId(id) });
   }
 
-  async addFile (file) {
+  async addFile(file) {
     const result = await this.files.insertOne(file);
     const { _id, ...rest } = result.ops[0];
     return { id: _id, ...rest };
   }
 
-  async findUserFileById (userId, fileId, removeLocalPath = true) {
+  async findUserFileById(userId, fileId, removeLocalPath = true) {
     if (!ObjectId.isValid(fileId)) {
       return null;
     }
     const result = await this.files.findOne({
       userId: ObjectId(userId),
-      _id: ObjectId(fileId)
+      _id: ObjectId(fileId),
     });
     if (!result) {
       return null;
     }
     if (removeLocalPath) {
       return FilesCollection.removeLocalPath(
-        FilesCollection.replaceDefaultMongoId(result)
+        FilesCollection.replaceDefaultMongoId(result),
       );
     }
     return FilesCollection.replaceDefaultMongoId(result);
   }
 
-  async findPublicOrOwnFile (userId, fileId) {
+  async findPublicOrOwnFile(userId, fileId) {
     if (!ObjectId.isValid(fileId)) {
       return null;
     }
 
     const result = await this.files.findOne({
-      _id: ObjectId(fileId)
+      _id: ObjectId(fileId),
     });
     if (!result) {
       return null;
@@ -72,7 +72,7 @@ export class FilesCollection {
     return FilesCollection.replaceDefaultMongoId(result);
   }
 
-  async findAllUserFilesByParentId (userId, parentId, page) {
+  async findAllUserFilesByParentId(userId, parentId, page) {
     let query = { userId: ObjectId(userId) };
 
     if (parentId !== 0) {
@@ -85,7 +85,7 @@ export class FilesCollection {
       }
       query = {
         ...query,
-        parentId: ObjectId(parentId)
+        parentId: ObjectId(parentId),
       };
     }
     const results = await this.files
@@ -98,32 +98,32 @@ export class FilesCollection {
       .map(FilesCollection.removeLocalPath);
   }
 
-  async updateFilePublication (userId, fileId, isPublished) {
+  async updateFilePublication(userId, fileId, isPublished) {
     if (!ObjectId.isValid(fileId)) {
       return null;
     }
     const result = await this.files.updateOne(
       {
         _id: ObjectId(fileId),
-        userId: ObjectId(userId)
+        userId: ObjectId(userId),
       },
-      { $set: { isPublic: isPublished } }
+      { $set: { isPublic: isPublished } },
     );
     if (result.matchedCount !== 1) {
       return null;
     }
     const doc = await this.findById(fileId);
     return FilesCollection.removeLocalPath(
-      FilesCollection.replaceDefaultMongoId(doc)
+      FilesCollection.replaceDefaultMongoId(doc),
     );
   }
 
-  static replaceDefaultMongoId (document) {
+  static replaceDefaultMongoId(document) {
     const { _id, ...rest } = document;
     return { id: _id, ...rest };
   }
 
-  static removeLocalPath (document) {
+  static removeLocalPath(document) {
     const doc = { ...document };
     delete doc.localPath;
     return doc;
@@ -134,7 +134,7 @@ export class FilesCollection {
  * A File class that represents a file document
  */
 export default class File {
-  constructor (userId, name, type, parentId, isPublic, data) {
+  constructor(userId, name, type, parentId, isPublic, data) {
     this.userId = userId;
     this.name = name;
     this.type = type;
@@ -144,7 +144,7 @@ export default class File {
     this.filesCollection = new FilesCollection();
   }
 
-  async validate () {
+  async validate() {
     if (!this.name) {
       return 'Missing name';
     }
@@ -171,7 +171,7 @@ export default class File {
     return null;
   }
 
-  async save () {
+  async save() {
     const error = await this.validate();
     if (error) {
       throw new Error(error);
@@ -182,7 +182,7 @@ export default class File {
         userId: ObjectId(this.userId),
         name: this.name,
         type: FOLDER,
-        parentId: this.parentId
+        parentId: this.parentId,
       });
     }
     await mkdir(FOLDER_PATH, { recursive: true });
@@ -194,7 +194,7 @@ export default class File {
       type: this.type,
       isPublic: this.isPublic,
       parentId: this.parentId ? ObjectId(this.parentId) : 0,
-      localPath
+      localPath,
     });
   }
 }
