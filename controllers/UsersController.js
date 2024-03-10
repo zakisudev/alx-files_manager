@@ -5,7 +5,7 @@ import { userQueue } from '../worker';
  * UsersController class
  */
 class UsersController {
-  static async postNew(request, response) {
+  static async postNew (request, response) {
     const { email, password } = request.body;
 
     if (!email) {
