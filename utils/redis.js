@@ -5,7 +5,7 @@ import { promisify } from 'util';
  * A Redis client class that can be used to interact with Redis.
  */
 class RedisClient {
-  constructor () {
+  constructor() {
     this.client = createClient();
     this.isConnected = false;
 
@@ -23,19 +23,19 @@ class RedisClient {
     this.asyncExpire = promisify(this.client.expire).bind(this.client);
   }
 
-  isAlive () {
+  isAlive() {
     return this.isConnected;
   }
 
-  set (key, value, expiry) {
+  set(key, value, expiry) {
     this.asyncSetX(key, expiry, value);
   }
 
-  get (key) {
+  get(key) {
     return this.asyncGet(key);
   }
 
-  del (key) {
+  del(key) {
     return this.asyncDel(key);
   }
 }
