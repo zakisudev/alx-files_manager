@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import dBClient from './db';
 import redisClient from './redis';
 
-export function getBasicAuthToken(request) {
+export function getBasicAuthToken (request) {
   const authHeader = request.headers.authorization;
   if (!authHeader) {
     return null;
@@ -17,7 +17,7 @@ export function getBasicAuthToken(request) {
   return { email, password };
 }
 
-export function getSessionToken(request) {
+export function getSessionToken (request) {
   const xHeader = request.headers['x-token'];
   if (!xHeader) {
     return null;
@@ -25,7 +25,7 @@ export function getSessionToken(request) {
   return xHeader;
 }
 
-export async function authenticateUser(email, password) {
+export async function authenticateUser (email, password) {
   const user = await dBClient.findUserByEmail(email);
   if (!user) {
     return null;
@@ -37,14 +37,14 @@ export async function authenticateUser(email, password) {
   return user;
 }
 
-export async function generateSessionToken(userId) {
+export async function generateSessionToken (userId) {
   const token = uuidv4();
   const key = `auth_${token}`;
   await redisClient.set(key, userId, 24 * 60 * 60);
   return { token };
 }
 
-export async function deleteSessionToken(token) {
+export async function deleteSessionToken (token) {
   const userId = await redisClient.get(`auth_${token}`);
   if (!userId) {
     return false;
@@ -53,7 +53,7 @@ export async function deleteSessionToken(token) {
   return true;
 }
 
-export async function getUserFromSession(token) {
+export async function getUserFromSession (token) {
   const userId = await redisClient.get(`auth_${token}`);
   if (!userId) {
     return null;
@@ -65,7 +65,7 @@ export async function getUserFromSession(token) {
   return { email: user.email, id: user._id };
 }
 
-export async function getCurrentUser(request) {
+export async function getCurrentUser (request) {
   const token = getSessionToken(request);
   if (!token) {
     return null;
