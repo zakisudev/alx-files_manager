@@ -8,23 +8,22 @@ import dBClient from '../utils/db';
 
 const { expect } = chai;
 
-const waitConnection = () =>
-  new Promise((resolve, reject) => {
-    let i = 0;
-    const repeatFct = async () => {
-      await setTimeout(() => {
-        i += 1;
-        if (i >= 10) {
-          reject();
-        } else if (!dBClient.isAlive()) {
-          repeatFct();
-        } else {
-          resolve();
-        }
-      }, 1000);
-    };
-    repeatFct();
-  });
+const waitConnection = () => new Promise((resolve, reject) => {
+  let i = 0;
+  const repeatFct = async () => {
+    await setTimeout(() => {
+      i += 1;
+      if (i >= 10) {
+        reject();
+      } else if (!dBClient.isAlive()) {
+        repeatFct();
+      } else {
+        resolve();
+      }
+    }, 1000);
+  };
+  repeatFct();
+});
 
 describe('dBClient', () => {
   before(async () => {

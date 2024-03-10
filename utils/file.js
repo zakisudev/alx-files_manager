@@ -43,7 +43,7 @@ export class FilesCollection {
     }
     if (removeLocalPath) {
       return FilesCollection.removeLocalPath(
-        FilesCollection.replaceDefaultMongoId(result)
+        FilesCollection.replaceDefaultMongoId(result),
       );
     }
     return FilesCollection.replaceDefaultMongoId(result);
@@ -107,14 +107,14 @@ export class FilesCollection {
         _id: ObjectId(fileId),
         userId: ObjectId(userId),
       },
-      { $set: { isPublic: isPublished } }
+      { $set: { isPublic: isPublished } },
     );
     if (result.matchedCount !== 1) {
       return null;
     }
     const doc = await this.findById(fileId);
     return FilesCollection.removeLocalPath(
-      FilesCollection.replaceDefaultMongoId(doc)
+      FilesCollection.replaceDefaultMongoId(doc),
     );
   }
 
