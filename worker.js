@@ -11,14 +11,14 @@ const THUMBNAIL_SIZES = [500, 250, 100];
 const fileQueue = new Queue('image-thumbnail-worker', {
   redis: {
     host: 'localhost',
-    port: 6379
-  }
+    port: 6379,
+  },
 });
 
-async function createAndSaveThumbnail (path, width) {
+async function createAndSaveThumbnail(path, width) {
   const thumbnail = await generateThumbnail(path, {
     width,
-    responseType: 'base64'
+    responseType: 'base64',
   });
   const filePath = `${path}_${width}`;
   await writeFile(filePath, Buffer.from(thumbnail, 'base64'));
@@ -48,8 +48,8 @@ fileQueue.process(async (job, done) => {
 export const userQueue = new Queue('user-welcome-worker', {
   redis: {
     host: 'localhost',
-    port: 6379
-  }
+    port: 6379,
+  },
 });
 
 userQueue.process(async (job, done) => {
